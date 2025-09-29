@@ -42,7 +42,7 @@ def download_and_move_file(url, file_info, raw_files_base_dir, processed_files_d
 
         # --- 计算目标路径并移动文件 ---
         # 1. 新的文件名 = 原始文件名 + .zip
-        new_filename = file_info['file_name'] + '.zip'
+        new_filename = ''.join(file_info['file_name'].split('.')[:-1]) + '.zip'
 
         # 2. 计算相对于 '01_raw_files' 的路径
         relative_path_from_raw = os.path.relpath(file_info['absolute_path'], raw_files_base_dir)
