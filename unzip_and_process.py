@@ -6,7 +6,7 @@ import shutil
 def unzip_and_process_files():
     """
     遍历 knowledge_base/02_processed_files 目录及其所有子目录中的zip文件，
-    就地解压，处理 full.md 并清理。
+    就地解压，处理 full.md 但不清理文件夹。
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -66,18 +66,8 @@ def unzip_and_process_files():
                         destination_md_path = os.path.join(root, new_md_name)
                         shutil.move(full_md_path_in_subdir, destination_md_path)
                         print(f"已移动并重命名 'full.md' 到 {destination_md_path}")
-                        
-                        # 清理目录
-                        try:
-                            shutil.rmtree(target_dir)
-                            print(f"已清理目录：{target_dir}")
-                        except OSError as e:
-                            print(f"清理目录 {target_dir} 时出错：{e}")
                     else:
                         print(f"在 {target_dir} 的子目录中未找到 'full.md'")
-                        # 如果没有full.md，也清理掉创建的空目录
-                        shutil.rmtree(target_dir)
-                        print(f"已清理空目录：{target_dir}")
 
                 except zipfile.BadZipFile:
                     print(f"错误：{item} 不是一个有效的 zip 文件。")
