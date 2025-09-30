@@ -16,7 +16,7 @@ def process_knowledge_base(
 
     :param metadata_path: metadata.json 文件的路径。
     :param raw_dir: 原始文件目录 (e.g., 'knowledge_base/01_raw_files')。
-    :param processed_dir: 处理后文件存放的目录 (e.g., 'knowledge_base/02_processed_files')。
+    :param processed_dir: 处理后文件存放的目录 (e.g., 'knowledge_base/02_raw_md_files')。
     :param api_token: 用于API认证的token。
     :param api_url: MinerU API的端点。
     """
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     # --- 配置 ---
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     RAW_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "01_raw_files")
-    PROCESSED_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "02_processed_files")
+    PROCESSED_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "02_raw_md_files")
     METADATA_PATH = os.path.join(PROJECT_ROOT, "knowledge_base", "metadata.json")
 
     # 请将此处的token替换为您自己的有效token

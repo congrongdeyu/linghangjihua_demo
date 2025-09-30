@@ -5,7 +5,7 @@ import shutil
 
 def unzip_and_process_files():
     """
-    遍历 knowledge_base/02_processed_files 目录及其所有子目录中的zip文件，
+    遍历 knowledge_base/02_raw_md_files 目录及其所有子目录中的zip文件，
     就地解压，处理 full.md 但不清理文件夹。
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +27,7 @@ def unzip_and_process_files():
         print("错误：未找到 'knowledge_base' 目录。")
         return
 
-    processed_files_path = os.path.join(knowledge_base_dir, "02_processed_files")
+    processed_files_path = os.path.join(knowledge_base_dir, "02_raw_md_files")
 
     if not os.path.isdir(processed_files_path):
         print(f"目录未找到：{processed_files_path}")

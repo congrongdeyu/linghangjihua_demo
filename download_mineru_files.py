@@ -12,7 +12,7 @@ def download_and_move_file(url, file_info, raw_files_base_dir, processed_files_d
     :param url: 文件的下载链接
     :param file_info: 包含原始文件信息的元数据字典
     :param raw_files_base_dir: 原始文件根目录 (e.g., '.../01_raw_files')
-    :param processed_files_dir: 处理后文件存放的根目录 (e.g., '.../02_processed_files')
+    :param processed_files_dir: 处理后文件存放的根目录 (e.g., '.../02_raw_md_files')
     """
     try:
         # 从 URL 中提取文件名
@@ -47,7 +47,7 @@ def download_and_move_file(url, file_info, raw_files_base_dir, processed_files_d
         # 2. 计算相对于 '01_raw_files' 的路径
         relative_path_from_raw = os.path.relpath(file_info['absolute_path'], raw_files_base_dir)
 
-        # 3. 构建在 '02_processed_files' 中的最终完整路径
+        # 3. 构建在 '02_raw_md_files' 中的最终完整路径
         final_dir = os.path.join(processed_files_dir, os.path.dirname(relative_path_from_raw))
         final_path = os.path.join(final_dir, new_filename)
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     METADATA_PATH = os.path.join(PROJECT_ROOT, "knowledge_base", "metadata.json")
     RAW_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "01_raw_files")
-    PROCESSED_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "02_processed_files")
+    PROCESSED_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "02_raw_md_files")
     
     # --- 1. 从元数据中收集所有需要处理的批处理任务 ---
     pending_tasks = {}

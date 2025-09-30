@@ -75,7 +75,7 @@ def setup_and_process_files():
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
     knowledge_base_dir = os.path.join(script_dir, "knowledge_base")
-    source_dir = os.path.join(knowledge_base_dir, "02_processed_files")
+    source_dir = os.path.join(knowledge_base_dir, "02_raw_md_files")
     target_dir = os.path.join(knowledge_base_dir, "03_langchain_processed")
 
     if not os.path.isdir(source_dir):
