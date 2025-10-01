@@ -50,5 +50,19 @@
             "error": "[AI处理时发生错误：The read operation timed out]",
             "action": "复制了源文件"
         }
+    ],
+    "2025-10-01 20:06:20": [
+        {
+            "file_path": "C:\\PycharmProjects\\linghangjihua_demo\\knowledge_base\\02_raw_md_files\\国务院关于深入实施“人工智能+”行动的意见\\原文\\国务院关于深入实施“人工智能+”行动的意见.md",
+            "error": "[AI处理时发生错误：The read operation timed out]",
+            "action": "复制了源文件"
+        }
+    ],
+    "2025-10-01 20:41:50": [
+        {
+            "file_path": "C:\\PycharmProjects\\linghangjihua_demo\\knowledge_base\\02_raw_md_files\\国务院关于深入实施“人工智能+”行动的意见\\解读\\《“人工智能+”行动意见》深度解读：从人口红利到智能红利中国经济社会变革新引擎.md",
+            "error": "[AI处理时发生错误：The read operation timed out]",
+            "action": "复制了源文件"
+        }
     ]
 }
