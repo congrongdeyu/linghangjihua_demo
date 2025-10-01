@@ -57,11 +57,11 @@ def process_md_with_langchain(content: str) -> str:
     messages = [SystemMessage(content=system_prompt), HumanMessage(content=content)]
 
     try:
-        # 初始化AI模型，并增加超时时间
+        # 初始化AI模型
         llm = ChatZhipuAI(
             model="glm-4-long",
-            temperature=0.5,
-            request_timeout=120  # 将超时时间设置为120秒
+            temperature=0,
+            request_timeout=300  # 将超时时间设置为300秒 (5分钟)
         )
         response = llm.invoke(messages)
         return response.content
