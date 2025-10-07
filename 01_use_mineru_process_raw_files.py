@@ -2,15 +2,10 @@ import os
 import json
 import shutil
 import requests
+from dotenv import load_dotenv
 
 
-def process_knowledge_base(
-    metadata_path,
-    raw_dir,
-    processed_dir,
-    api_token,
-    api_url="https://mineru.net/api/v4/file-urls/batch"
-):
+def process_knowledge_base(metadata_path, raw_dir, processed_dir, api_token, api_url):
     """
     处理原始文件，将md文件复制，将非md文件上传并更新元数据。
 
@@ -22,13 +17,15 @@ def process_knowledge_base(
     """
     # --- 1. 加载元数据 ---
     try:
-        with open(metadata_path, 'r', encoding='utf-8') as f:
+        with open(metadata_path, "r", encoding="utf-8") as f:
             metadata = json.load(f)
         print(f"成功加载元数据: {metadata_path}")
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"错误: 无法加载或解析元数据文件 {metadata_path}。请先运行 'create_metadata.py'。原因: {e}")
+        print(
+            f"错误: 无法加载或解析元数据文件 {metadata_path}。请先运行 'create_metadata.py'。原因: {e}"
+        )
         return
-    
+
     # --- 2. 复制目录结构，包括空文件夹 ---
     print("\n--- 正在复制目录结构 ---")
     # 确保根处理目录存在
@@ -50,11 +47,11 @@ def process_knowledge_base(
             print(f"警告: 跳过文件 (UUID: {file_uuid})，路径不存在: {file_path}")
             continue
 
-        if file_path.endswith('.md'):
+        if file_path.endswith(".md"):
             md_files_to_copy.append(file_info)
         else:
             # 为待上传文件添加UUID，以便后续更新元数据
-            file_info['uuid'] = file_uuid
+            file_info["uuid"] = file_uuid
             files_to_upload.append(file_info)
 
     # --- 4. 复制Markdown文件 ---
@@ -79,12 +76,12 @@ def process_knowledge_base(
     else:
         header = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_token}"
+            "Authorization": f"Bearer {api_token}",
         }
 
         # 遍历每个文件，单独上传并记录batch_id
         for file_info in files_to_upload:
-            file_uuid = file_info['uuid']
+            file_uuid = file_info["uuid"]
             print(f"\n- 开始处理文件: {file_info['file_name']}")
 
             # 1. 为单个文件构造API请求体
@@ -92,7 +89,13 @@ def process_knowledge_base(
                 "enable_formula": True,
                 "language": "ch",
                 "enable_table": True,
-                "files": [{"name": file_info["file_name"], "is_ocr": True, "data_id": file_uuid}]
+                "files": [
+                    {
+                        "name": file_info["file_name"],
+                        "is_ocr": True,
+                        "data_id": file_uuid,
+                    }
+                ],
             }
 
             try:
@@ -108,13 +111,13 @@ def process_knowledge_base(
                     print(f"  - 获取链接成功。批处理ID: {batch_id}")
 
                     # 3. 上传文件
-                    with open(file_info['absolute_path'], 'rb') as f:
+                    with open(file_info["absolute_path"], "rb") as f:
                         res_upload = requests.put(upload_url, data=f)
 
                     if res_upload.status_code == 200:
                         print(f"  - 上传成功。")
                         # 4. 记录batch_id到元数据
-                        metadata[file_uuid]['batch_id'] = batch_id
+                        metadata[file_uuid]["batch_id"] = batch_id
                     else:
                         print(f"  - 上传失败 (状态码: {res_upload.status_code})")
                 else:
@@ -125,18 +128,35 @@ def process_knowledge_base(
                 print(f"  - 解析API响应失败: {e}")
 
     # --- 6. 保存更新后的元数据 ---
-    with open(metadata_path, 'w', encoding='utf-8') as f:
+    with open(metadata_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=4, ensure_ascii=False)
     print(f"\n处理完成。元数据已更新并保存至: {metadata_path}")
 
 
 if __name__ == "__main__":
+    # --- 加载环境变量 ---
+    load_dotenv()
+
     # --- 配置 ---
     PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
     RAW_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "01_raw_files")
-    PROCESSED_FILES_DIR = os.path.join(PROJECT_ROOT, "knowledge_base", "02_raw_md_files")
+    PROCESSED_FILES_DIR = os.path.join(
+        PROJECT_ROOT, "knowledge_base", "02_raw_md_files"
+    )
     METADATA_PATH = os.path.join(PROJECT_ROOT, "knowledge_base", "metadata.json")
 
-    # 请将此处的token替换为您自己的有效token
-    API_TOKEN = "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFM1MTIifQ.eyJqdGkiOiI0MzIwOTA1MyIsInJvbCI6IlJPTEVfUkVHSVNURVIiLCJpc3MiOiJPcGVuWExhYiIsImlhdCI6MTc1OTEzNjg3OSwiY2xpZW50SWQiOiJsa3pkeDU3bnZ5MjJqa3BxOXgydyIsInBob25lIjoiMTg1Njg2ODEyMjQiLCJvcGVuSWQiOm51bGwsInV1aWQiOiJlYmRmOTZhYy0xMTBiLTRmYmUtOWI3Ni00M2E0Mzk0ODcyYTIiLCJlbWFpbCI6IiIsImV4cCI6MTc2MDM0NjQ3OX0.RljqtmU75fGF-KjqvXugEhG7BEqKL0AvYPSpow_Ub2zDcJ0hcfub35ACD3sJJjDEcNNGVSWFN3xq1e5Qq54pxA"
-    process_knowledge_base(METADATA_PATH, RAW_FILES_DIR, PROCESSED_FILES_DIR, API_TOKEN)
+    # --- 从环境变量中获取API凭证 ---
+    MINERU_API_TOKEN = os.getenv("MINERU_API_TOKEN")
+    MINERU_API_URL = os.getenv("MINERU_API_URL")
+
+    if not MINERU_API_TOKEN or not MINERU_API_URL:
+        print("错误：请在 .env 文件中设置 MINERU_API_TOKEN 和 MINERU_API_URL。")
+        exit()
+
+    process_knowledge_base(
+        METADATA_PATH,
+        RAW_FILES_DIR,
+        PROCESSED_FILES_DIR,
+        MINERU_API_TOKEN,
+        MINERU_API_URL,
+    )

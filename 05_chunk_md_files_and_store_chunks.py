@@ -1,16 +1,18 @@
-
 import os
 import pickle
 
 # 确保已安装所需库: pip install langchain-text-splitters
 from langchain_text_splitters import MarkdownHeaderTextSplitter
 
+
 def chunk_markdown_content(content: str, file_path: str) -> list:
     """
     使用 MarkdownHeaderTextSplitter 对文件内容进行分块。
     """
-    print(f"  -> 正在使用 MarkdownHeaderTextSplitter 进行分块: {os.path.basename(file_path)}")
-    
+    print(
+        f"  -> 正在使用 MarkdownHeaderTextSplitter 进行分块: {os.path.basename(file_path)}"
+    )
+
     headers_to_split_on = [
         ("#", "Header 1"),
         ("##", "Header 2"),
@@ -18,10 +20,9 @@ def chunk_markdown_content(content: str, file_path: str) -> list:
     ]
 
     markdown_splitter = MarkdownHeaderTextSplitter(
-        headers_to_split_on=headers_to_split_on, 
-        strip_headers=False
+        headers_to_split_on=headers_to_split_on, strip_headers=False
     )
-    
+
     try:
         chunks = markdown_splitter.split_text(content)
         print(f"  -> 文件被分成了 {len(chunks)} 块。")
@@ -30,6 +31,7 @@ def chunk_markdown_content(content: str, file_path: str) -> list:
         print(f"  -> 分块时出错: {e}")
         return []
 
+
 def chunk_and_save_files():
     """
     主函数，负责分块并将结果保存为 .pkl 文件。
@@ -37,7 +39,9 @@ def chunk_and_save_files():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     knowledge_base_dir = os.path.join(script_dir, "knowledge_base")
     source_dir = os.path.join(knowledge_base_dir, "03_structure_md_files")
-    output_dir = os.path.join(knowledge_base_dir, "04_database", "01_langchain_split_documents_files")
+    output_dir = os.path.join(
+        knowledge_base_dir, "04_database", "01_langchain_split_documents_files"
+    )
 
     if not os.path.isdir(output_dir):
         print(f"目录不存在，正在创建: {output_dir}")
@@ -61,18 +65,18 @@ def chunk_and_save_files():
                 print(f"正在处理文件 ({file_count}): {file_path}")
 
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         content = f.read()
                 except Exception as e:
                     print(f"  -> 读取文件时出错: {e}")
                     continue
 
                 chunks = chunk_markdown_content(content, file_path)
-                
+
                 if not chunks:
                     print("  -> 未生成任何分块，跳过保存。")
                     continue
-                
+
                 total_chunks += len(chunks)
 
                 relative_path = os.path.relpath(root, source_dir)
@@ -82,7 +86,7 @@ def chunk_and_save_files():
                 os.makedirs(os.path.dirname(destination_path), exist_ok=True)
 
                 try:
-                    with open(destination_path, 'wb') as f:
+                    with open(destination_path, "wb") as f:
                         pickle.dump(chunks, f)
                     print(f"  -> 分块已保存到: {destination_path}")
                 except Exception as e:
@@ -91,14 +95,22 @@ def chunk_and_save_files():
     if file_count == 0:
         print("在源目录中没有找到任何 .md 文件。")
     else:
-        print(f"\n处理完成！共处理了 {file_count} 个 Markdown 文件，总共生成了 {total_chunks} 个文本块。")
+        print(
+            f"\n处理完成！共处理了 {file_count} 个 Markdown 文件，总共生成了 {total_chunks} 个文本块。"
+        )
+
 
 def view_a_sample_pkl_file():
     """
     查找第一个生成的 .pkl 文件，并打印其内容以供检查。
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(script_dir, "knowledge_base", "04_database", "01_langchain_split_documents_files")
+    output_dir = os.path.join(
+        script_dir,
+        "knowledge_base",
+        "04_database",
+        "01_langchain_split_documents_files",
+    )
 
     sample_file_path = None
     for root, _, files in os.walk(output_dir):
@@ -110,13 +122,15 @@ def view_a_sample_pkl_file():
             break
 
     if not sample_file_path:
-        print("未找到任何 .pkl 文件可供查看。请先确保 chunk_and_save_files() 已成功运行。")
+        print(
+            "未找到任何 .pkl 文件可供查看。请先确保 chunk_and_save_files() 已成功运行。"
+        )
         return
 
     print(f"正在查看示例文件: {sample_file_path}")
 
     try:
-        with open(sample_file_path, 'rb') as f:
+        with open(sample_file_path, "rb") as f:
             # 加载pkl文件，还原为Document对象列表
             chunks = pickle.load(f)
 
@@ -133,7 +147,11 @@ def view_a_sample_pkl_file():
             print("\n内容 (Content):")
             # 为防止内容过长刷屏，只显示前300个字符
             content_preview = chunk.page_content[:300]
-            print(content_preview + "..." if len(chunk.page_content) > 300 else content_preview)
+            print(
+                content_preview + "..."
+                if len(chunk.page_content) > 300
+                else content_preview
+            )
 
         if len(chunks) > 2:
             print(f"\n... (以及其他 {len(chunks) - 2} 个文本块)")
@@ -145,9 +163,9 @@ def view_a_sample_pkl_file():
 if __name__ == "__main__":
     # 第一步：执行分块和保存任务
     chunk_and_save_files()
-    
+
     # 第二步：打印分隔符，并查看一个示例文件的内容
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("--- 查看一个分块文件的内容示例 ---")
-    print("="*60)
+    print("=" * 60)
     view_a_sample_pkl_file()

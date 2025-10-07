@@ -29,7 +29,7 @@ def create_metadata_file(raw_files_dir, kb_dir="knowledge_base"):
         print(f"警告: 目录 '{raw_files_dir}' 为空。")
         print(f"请先将文件放入该目录，然后再运行此脚本。")
         # 创建一个空的元数据文件
-        with open(metadata_file_path, 'w', encoding='utf-8') as f:
+        with open(metadata_file_path, "w", encoding="utf-8") as f:
             json.dump({}, f, indent=4)
         return
 
@@ -40,7 +40,7 @@ def create_metadata_file(raw_files_dir, kb_dir="knowledge_base"):
         for filename in files:
             # 生成一个唯一的UUID作为文件的ID
             file_uuid = str(uuid.uuid4())
-            
+
             # 获取文件的绝对路径和相对路径
             absolute_path = os.path.join(root, filename)
             relative_path = os.path.relpath(absolute_path, project_root)
@@ -49,19 +49,22 @@ def create_metadata_file(raw_files_dir, kb_dir="knowledge_base"):
             metadata[file_uuid] = {
                 "file_name": filename,
                 "absolute_path": absolute_path,
-                "relative_path": relative_path.replace("\\", "/"),  # 统一路径分隔符为'/'
+                "relative_path": relative_path.replace(
+                    "\\", "/"
+                ),  # 统一路径分隔符为'/'
             }
             print(f"  - 已为文件 '{filename}' 分配UUID: {file_uuid}")
 
     # --- 5. 写入JSON文件 ---
     try:
-        with open(metadata_file_path, 'w', encoding='utf-8') as f:
+        with open(metadata_file_path, "w", encoding="utf-8") as f:
             # indent=4 使JSON文件格式优美，易于阅读
             # ensure_ascii=False 确保中文字符能正确显示
             json.dump(metadata, f, indent=4, ensure_ascii=False)
         print(f"\n元数据文件创建成功！已保存至: {metadata_file_path}")
     except IOError as e:
         print(f"\n错误：无法写入元数据文件。原因: {e}")
+
 
 if __name__ == "__main__":
     # 指定原始文件存放在 "knowledge_base" 目录下的 "01_raw_files" 子目录中

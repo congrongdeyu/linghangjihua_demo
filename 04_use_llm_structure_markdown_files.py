@@ -1,4 +1,3 @@
-
 import os
 import shutil
 import time
@@ -10,6 +9,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
+
 
 def process_md_with_langchain(content: str) -> str:
     """
@@ -69,17 +69,18 @@ def process_md_with_langchain(content: str) -> str:
             temperature=0.0,
         )
         response = llm.invoke(messages)
-        
+
         # 双重保险：以防万一模型还是添加了代码块，我们手动移除它
         processed_content = response.content.strip()
         if processed_content.startswith("```markdown"):
-            processed_content = processed_content[len("```markdown"):].strip()
+            processed_content = processed_content[len("```markdown") :].strip()
         if processed_content.endswith("```"):
-            processed_content = processed_content[:-len("```")].strip()
-            
+            processed_content = processed_content[: -len("```")].strip()
+
         return processed_content
     except Exception as e:
         return f"[AI处理时发生错误：{e}]"
+
 
 def setup_and_process_files():
     """
@@ -95,7 +96,9 @@ def setup_and_process_files():
         return
 
     print(f"正在从 {source_dir} 复制目录结构到 {target_dir}")
-    shutil.copytree(source_dir, target_dir, ignore=shutil.ignore_patterns('*'), dirs_exist_ok=True)
+    shutil.copytree(
+        source_dir, target_dir, ignore=shutil.ignore_patterns("*"), dirs_exist_ok=True
+    )
     print("目录结构复制完成。")
 
     print("开始遍历和处理 Markdown 文件...")
@@ -115,11 +118,17 @@ def setup_and_process_files():
             print(f"\n正在处理文件 ({file_count}): {source_file_path}")
 
             try:
-                with open(source_file_path, 'r', encoding='utf-8') as f:
+                with open(source_file_path, "r", encoding="utf-8") as f:
                     original_content = f.read()
             except Exception as e:
                 print(f"  -> 读取文件时出错: {e}")
-                permanently_failed_files.append({"file_path": source_file_path, "error": f"读取文件失败: {e}", "action": "未处理"})
+                permanently_failed_files.append(
+                    {
+                        "file_path": source_file_path,
+                        "error": f"读取文件失败: {e}",
+                        "action": "未处理",
+                    }
+                )
                 continue
 
             processed_content = None
@@ -127,7 +136,7 @@ def setup_and_process_files():
             for attempt in range(5):
                 print(f"  -> 尝试处理 (第 {attempt + 1}/5 次)")
                 result = process_md_with_langchain(original_content)
-                
+
                 if not result.startswith("[AI处理时发生错误"):
                     processed_content = result
                     print("  -> AI模型处理成功。")
@@ -138,28 +147,33 @@ def setup_and_process_files():
                     if attempt < 4:
                         print("  -> 10秒后重试...")
                         time.sleep(10)
-            
+
             os.makedirs(os.path.dirname(destination_file_path), exist_ok=True)
             if processed_content is not None:
-                with open(destination_file_path, 'w', encoding='utf-8') as f:
+                with open(destination_file_path, "w", encoding="utf-8") as f:
                     f.write(processed_content)
                 print(f"  -> 已保存到: {destination_file_path}")
             else:
                 print(f"  -> 5次尝试后处理失败，将直接复制源文件。")
                 shutil.copy2(source_file_path, destination_file_path)
-                permanently_failed_files.append({
-                    "file_path": source_file_path,
-                    "error": last_error,
-                    "action": "复制了源文件"
-                })
+                permanently_failed_files.append(
+                    {
+                        "file_path": source_file_path,
+                        "error": last_error,
+                        "action": "复制了源文件",
+                    }
+                )
 
     if not permanently_failed_files:
         print(f"\n处理完成！共成功处理了 {file_count} 个 Markdown 文件。")
     else:
-        print(f"\n处理完成！在 {file_count} 个文件中，有 {len(permanently_failed_files)} 个文件处理失败。")
+        print(
+            f"\n处理完成！在 {file_count} 个文件中，有 {len(permanently_failed_files)} 个文件处理失败。"
+        )
         print("以下文件在所有重试后仍然失败:")
         for item in permanently_failed_files:
             print(f"  - {item['file_path']}")
+
 
 if __name__ == "__main__":
     setup_and_process_files()
