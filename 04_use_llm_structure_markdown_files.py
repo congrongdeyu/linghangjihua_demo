@@ -2,7 +2,6 @@
 import os
 import shutil
 import time
-import json
 from dotenv import load_dotenv
 
 # 确保已安装所需库: pip install langchain-community python-dotenv langchain-core
@@ -11,29 +10,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 # 加载 .env 文件中的环境变量
 load_dotenv()
-
-def update_metadata_log(knowledge_base_dir: str, failed_files_info: list):
-    """
-    创建或更新 metadata.json 文件，记录处理失败的文件信息。
-    """
-    metadata_path = os.path.join(knowledge_base_dir, "metadata.json")
-    print(f"--- 正在更新失败记录到 {metadata_path} ---")
-    
-    try:
-        with open(metadata_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = {}
-
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    data[timestamp] = failed_files_info
-    
-    try:
-        with open(metadata_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-        print("失败记录更新完成。")
-    except Exception as e:
-        print(f"写入 metadata.json 文件时出错: {e}")
 
 def process_md_with_langchain(content: str) -> str:
     """
@@ -184,7 +160,6 @@ def setup_and_process_files():
         print("以下文件在所有重试后仍然失败:")
         for item in permanently_failed_files:
             print(f"  - {item['file_path']}")
-        update_metadata_log(knowledge_base_dir, permanently_failed_files)
 
 if __name__ == "__main__":
     setup_and_process_files()
