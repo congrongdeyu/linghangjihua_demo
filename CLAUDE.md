@@ -26,22 +26,22 @@ Execute in sequence for full document processing:
 
 ```bash
 # 1. Document metadata creation
-python create_metadata.py
+python 00_create_metadata_for_raw_files.py
 
 # 2. File acquisition (requires API access)
-python download_mineru_files.py
-python unzip_and_process.py
+python 02_download_mineru_files.py
+python 03_unzip_mineru_files_and_rename_md_file.py
 
 # 3. Document processing and enhancement
-python process_raw_files.py
-python process_markdown_files.py
+python 01_use_mineru_process_raw_files.py
+python 04_use_llm_structure_markdown_files.py
 
 # 4. Content structuring
-python chunk_and_store.py
+python 05_chunk_md_files_and_store_chunks.py
 
 # 5. Database creation
-python create_vector_database.py
-python create_knowledge_graph.py
+python 06_create_vector_database_from_chunks.py
+python 07_create_knowledge_graph_from_chunks.py
 
 # 6. Testing
 python test_graph_creation.py
