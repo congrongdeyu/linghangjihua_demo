@@ -2,8 +2,6 @@ import os
 import pickle
 
 from dotenv import load_dotenv
-
-# 确保已安装所需库: pip install langchain-chroma langchain-community python-dotenv
 from langchain_chroma import Chroma
 from langchain_community.embeddings import ZhipuAIEmbeddings
 from langchain_core.documents import Document
